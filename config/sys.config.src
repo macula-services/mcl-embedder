@@ -15,6 +15,11 @@
         {identity_key_path, "/etc/mcl/secrets/identity.key"},
         {health_port,       ${MCL_HEALTH_PORT}},
         {capability_topic,  <<"_mesh.cap.">>},
+        %% The org the procedure is served under: `mcl-embedder/embed'. The
+        %% realm must have granted THIS node a provider authorization for it
+        %% (D25), or nothing is advertised and /health says so.
+        {org,               <<"mcl-embedder">>},
+        {service_name,      <<"mcl-embedder">>},
         %% THE REALM IS AN APPLICATION ENV, NOT A SHELL VARIABLE, and this file
         %% is the only place the two meet. mcl_om_identity:realm() reads
         %% application:get_env(mcl_om, realm); exporting MCL_REALM in the

@@ -13,4 +13,8 @@
 start_link() -> supervisor:start_link({local, ?MODULE}, ?MODULE, []).
 
 init([]) ->
-    {ok, {#{strategy => one_for_one, intensity => 5, period => 10}, []}}.
+    {ok, {#{strategy => one_for_one, intensity => 5, period => 10},
+          [#{id => check_provider_grant,
+             start => {check_provider_grant, start_link, []},
+             restart => permanent, shutdown => 5000, type => worker,
+             modules => [check_provider_grant]}]}}.

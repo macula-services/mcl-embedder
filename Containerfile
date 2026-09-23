@@ -1,72 +1,67 @@
 # mcl-embedder
 #
-# Multilingual sentence embeddings as a mesh procedure, for callers that cannot run the ONNX model themselves
+# Multilingual sentence embeddings as a mesh procedure, for callers that cannot
+# run the ONNX model themselves.
 #
-# NO DATA VOLUME AS GENERATED. The scaffold writes nothing, and a named volume
-# for data that does not exist is a promise the image cannot keep. Add one
-# together with the code that writes it, and declare it here and in the compose
-# file at the same time.
-
-# ⚠ THE RUNTIME IS PINNED IN TWO PLACES AND THEY MUST AGREE: here and `lint.yml'
-# beside it. A generated service that builds on one release and tests on another
-# only ever proves "the tests pass on the CI release".
+# ⚠ GLIBC, NOT ALPINE, IN BOTH STAGES. fastembed links an ONNX Runtime that is
+# prebuilt against glibc; on musl it builds and then fails to load the model.
+# This is why the image departs from the mcl_service scaffold's Alpine base.
+# A generated test asserts the runtime stage stays glibc.
 #
-# This template said 27 from the beginning and nothing revisited it, so every
-# service scaffolded from it inherited 27 while development machines moved on.
-# In `hecate-biotope' that cost three commits of red CI on a crash that does not
-# occur on the development release at all, and because `build-push.yml' is a
-# separate workflow the image shipped to the fleet regardless.
-FROM docker.io/erlang:28-alpine AS builder
+# ⚠ THE HOST NEEDS AVX2. The ONNX Runtime SIGILLs on a CPU without it (the
+# Celeron J4105 nodes, for example). Run this image on an AVX2 host and reach
+# it over the mesh; that is what the service is for.
+#
+# ⚠ THE RUNTIME IS PINNED IN TWO PLACES AND THEY MUST AGREE: here and
+# `lint.yml' beside it.
+FROM docker.io/erlang:28 AS builder
 WORKDIR /build
 
-# macula ships a QUIC NIF. MACULA_FORCE_SOURCE_BUILD makes it build here rather
-# than fetch a prebuilt binary linked against a different libc, which is the
-# recorded glibc trap: the fetched artifact loads on the build host and fails on
-# alpine at runtime.
-#
-# openssl-dev/zstd-dev/snappy-dev/lz4-dev: mcl_om pulls in rocksdb (via
-# barrel_docdb) and khepri/ra transitively, UNCONDITIONALLY -- confirmed on a
-# storeless, producer-only service (no store_id/0 or data_dir/0 exported),
-# which still failed to build without these. Not specific to a service that
-# owns its own reckon-db store.
-RUN apk add --no-cache git curl bash build-base cmake perl linux-headers \
-        openssl-dev zstd-dev snappy-dev lz4-dev
+# cmake/build-essential and the compression -dev packages: mcl_om pulls in
+# rocksdb (barrel_docdb) and khepri/ra transitively, even for a storeless
+# service. Rust: mcl_embed and macula compile their NIFs from source.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        git curl bash build-essential cmake \
+        libsnappy-dev liblz4-dev libzstd-dev libbz2-dev \
+    && rm -rf /var/lib/apt/lists/*
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs \
         | sh -s -- -y --default-toolchain stable --profile minimal
 ENV PATH="/root/.cargo/bin:${PATH}"
-ENV RUSTFLAGS="-C target-feature=-crt-static"
 ENV MACULA_FORCE_SOURCE_BUILD=1
 
 RUN curl -fsSL https://s3.amazonaws.com/rebar3/rebar3 -o /usr/local/bin/rebar3 \
     && chmod +x /usr/local/bin/rebar3
 
-# Dependencies resolve from rebar.config alone, so this layer survives every
-# change to config/ and apps/ and the Rust toolchain is not re-run per commit.
 COPY rebar.config ./
 RUN rebar3 get-deps
 
+# The REAL embedder, not the deterministic stub: mcl_embed's own build hook
+# reads this when it compiles its NIF.
+ENV CARGO_FEATURES=real-embed
+
 COPY config ./config
 COPY apps ./apps
+RUN rebar3 compile
+
+# Bake the model into the image, so a container never downloads it at start
+# and a box with no route to the model host still serves. Loading it through
+# the NIF is what fetches it, which also proves the real backend was built.
+RUN mkdir -p /models && erl -noshell -pa _build/default/lib/mcl_embed/ebin \
+      -eval 'case mcl_embed_nif:load(<<"intfloat/multilingual-e5-small">>, 384, <<"/models">>) of {ok, _} -> io:format("baked model into /models~n"); E -> io:format(standard_error, "model bake failed: ~p~n", [E]), halt(1) end' \
+      -s init stop
+
 RUN rebar3 as prod release
 
-FROM docker.io/alpine:3.22
-# LINKS THE PACKAGE TO THE REPOSITORY. On registries that read it, ghcr among
-# them, a package without this label is an orphan: it does not appear on the
-# repository page and does not inherit its visibility. A service that shipped
-# private by accident failed its first pull with a bare "unauthorized", which
-# names nothing and sends you looking in the wrong place.
+FROM docker.io/debian:trixie-slim
 LABEL org.opencontainers.image.source="https://github.com/macula-services/mcl-embedder"
-# zstd-libs/snappy/lz4-libs: the RUNTIME shared libraries for rocksdb's
-# compression backends, compiled against in the builder stage above via
-# their -dev packages. Missing here crashes the release outright on
-# boot -- rocksdb's on_load NIF init fails with "Failed to load NIF
-# library: Error loading shared library liblz4.so.1: No such file or
-# directory" and the whole node exits, since kernel can't start.
-# Confirmed live: this stage shipped without them once already.
-RUN apk add --no-cache ncurses-libs libstdc++ libgcc openssl ca-certificates curl \
-        zstd-libs snappy lz4-libs
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        libssl3 zlib1g libbrotli1 libzstd1 libstdc++6 libncurses6 \
+        libsnappy1v5 liblz4-1 libbz2-1.0 \
+        ca-certificates curl \
+    && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 COPY --from=builder /build/_build/prod/rel/mcl_embedder ./
+COPY --from=builder /models /models
 
 ENV HOME=/app
 ENV RELX_REPLACE_OS_VARS=true
@@ -75,11 +70,16 @@ ENV MCL_NODE_NAME=mcl_embedder
 ENV MCL_NODE_HOST=127.0.0.1
 ENV MCL_COOKIE=mcl_embedder
 ENV MCL_HEALTH_PORT=8480
+# Where mcl_embed finds the baked model.
+ENV MCL_EMBED_MODEL_DIR=/models
 
+# The node identity key: a NAMED volume in deploy/docker-compose.yml. It is the
+# node the realm grants provider authorization to.
 VOLUME ["/etc/mcl/secrets"]
 
 EXPOSE 8480
-HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
+# A longer start period: the first embed loads the model.
+HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
     CMD curl -fsS "http://127.0.0.1:${MCL_HEALTH_PORT}/health" || exit 1
 
 CMD ["/app/bin/mcl_embedder", "foreground"]

@@ -1,14 +1,16 @@
 {application, mcl_embedder, [
     {description, "Multilingual sentence embeddings as a mesh procedure, for callers that cannot run the ONNX model themselves"},
     {vsn, "0.1.0"},
-    {registered, [mcl_embedder_sup]},
+    {registered, [mcl_embedder_sup, check_provider_grant]},
     {mod, {mcl_embedder_app, []}},
     {applications, [
         kernel,
         stdlib,
         crypto,
         %% Mesh SDK, realm identity, capabilities, health.
-        mcl_om
+        mcl_om,
+        %% The embedder itself (Rust NIF over fastembed/ONNX).
+        mcl_embed
     ]},
     {env, []},
     {modules, []},

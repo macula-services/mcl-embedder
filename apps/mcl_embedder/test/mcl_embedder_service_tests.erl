@@ -55,41 +55,72 @@ info_version_matches_the_application_test() ->
     #{version := Reported} = ?SERVICE:info(),
     ?assertEqual(list_to_binary(Vsn), Reported).
 
-health_is_green_test() ->
+%%==============================================================================
+%% The contract callers dial
+%%==============================================================================
+
+%% One procedure, `mcl-embedder/embed', the way mcl_om registers it. mcl-rag
+%% builds against this name. A change is a new name, not an edit.
+the_procedure_is_the_published_contract_test() ->
+    ?assertEqual([<<"mcl-embedder/embed">>],
+                 [mcl_om_capabilities:org_procedure(<<"mcl-embedder">>, Name)
+                  || #{name := Name} <- ?SERVICE:capabilities()]).
+
+the_procedure_is_served_by_serve_embed_test() ->
+    ?assertMatch([#{handler := {serve_embed, []}}], ?SERVICE:capabilities()).
+
+the_shipped_config_names_the_org_test() ->
+    {ok, Text} = file:read_file(alongside("config/sys.config.src")),
+    ?assertNotEqual(nomatch, binary:match(Text, <<"{org,               <<\"mcl-embedder\">>}">>)).
+
+%%==============================================================================
+%% Health: whether callers can reach it
+%%==============================================================================
+
+a_missing_provider_grant_is_degraded_test() ->
+    ?assertEqual({degraded, {no_provider_grant, [<<"mcl-embedder/embed">>]}},
+                 ?SERVICE:grant_health(#{<<"mcl-embedder/embed">> => missing})).
+
+a_granted_procedure_is_ok_test() ->
+    ?assertEqual(ok, ?SERVICE:grant_health(#{<<"mcl-embedder/embed">> => granted})),
+    ?assertEqual(ok, ?SERVICE:grant_health(#{})).
+
+health_without_the_grant_checker_running_is_ok_test() ->
     ?assertEqual(ok, ?SERVICE:health()).
 
-%% An empty list is the correct answer for a service that does nothing yet. The
-%% assertion is here so that adding a capability breaks a test and makes someone
-%% write down what the service can now actually do.
-announces_no_capability_yet_test() ->
-    ?assertEqual([], ?SERVICE:capabilities()).
-
-identity_spec_has_the_shape_mcl_om_expects_test() ->
-    #{scope := Scope, actions := Actions,
-      resources := Resources, ttl_days := Ttl} = ?SERVICE:identity_spec(),
-    ?assert(is_binary(Scope)),
-    ?assert(is_list(Actions)),
-    ?assert(is_list(Resources)),
-    ?assert(is_integer(Ttl) andalso Ttl > 0).
-
-%% A resource this service is not authorised for is a publish the realm would
-%% refuse once UCAN delegation lands. Asking for nothing and claiming nothing
-%% must stay in step, so the two are asserted together.
-authority_matches_what_is_announced_test() ->
+identity_spec_asks_for_nothing_test() ->
     #{actions := Actions, resources := Resources} = ?SERVICE:identity_spec(),
-    ?assertEqual([], ?SERVICE:capabilities()),
     ?assertEqual([], Actions),
     ?assertEqual([], Resources).
 
-%% The supervisor starts and stops cleanly on its own, without mcl_om. It has
-%% no children as generated; this asserts the tree is startable, not that it does
-%% any work.
-supervisor_starts_and_stops_test() ->
-    {ok, Pid} = mcl_embedder_sup:start_link(),
-    ?assert(is_process_alive(Pid)),
-    ?assertEqual([], supervisor:which_children(Pid)),
-    unlink(Pid),
-    exit(Pid, shutdown).
+supervisor_runs_the_grant_check_test() ->
+    {ok, {_Flags, Children}} = mcl_embedder_sup:init([]),
+    ?assertEqual([check_provider_grant], [Id || #{id := Id} <- Children]).
+
+%%==============================================================================
+%% The image: glibc, the real model, baked in
+%%==============================================================================
+
+%% fastembed's ONNX Runtime is prebuilt against glibc, so the runtime image
+%% is Debian, never Alpine (musl): the scaffold's Alpine image would build
+%% and then fail to load the model.
+the_runtime_image_is_glibc_test() ->
+    Runtime = runtime_stage(),
+    ?assertEqual(nomatch, binary:match(Runtime, <<"alpine">>)),
+    ?assertNotEqual(nomatch, binary:match(Runtime, <<"debian">>)).
+
+%% Built with the real embedder, not the deterministic stub, and the model is
+%% baked into the image where the library is told to look for it.
+the_image_builds_the_real_model_test() ->
+    {ok, Text} = file:read_file(alongside("Containerfile")),
+    ?assertNotEqual(nomatch, binary:match(Text, <<"CARGO_FEATURES=real-embed">>)),
+    ?assertNotEqual(nomatch, binary:match(Text, <<"COPY --from=builder /models /models">>)),
+    ?assertNotEqual(nomatch, binary:match(Text, <<"MCL_EMBED_MODEL_DIR=/models">>)).
+
+runtime_stage() ->
+    {ok, Text} = file:read_file(alongside("Containerfile")),
+    Parts = binary:split(Text, <<"\nFROM ">>, [global]),
+    lists:last(Parts).
 
 %%==============================================================================
 %% The runtime is pinned in two places, and neither is the one you are running

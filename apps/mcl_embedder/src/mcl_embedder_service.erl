@@ -16,6 +16,7 @@
 -behaviour(mcl_om_service).
 
 -export([info/0, start/1, stop/1, health/0, capabilities/0, identity_spec/0]).
+-export([grant_health/1]).
 
 info() ->
     #{name => <<"mcl-embedder">>,
@@ -26,22 +27,33 @@ start(_Opts) -> mcl_embedder_sup:start_link().
 
 stop(_State) -> ok.
 
-%% Green once the supervision tree is up. Replace this with a real probe of
-%% whatever this service needs in order to do its job. A dark mesh is usually NOT
-%% a health failure: decide that deliberately rather than by default.
-health() -> ok.
+%% Health is whether callers can REACH the procedure: serving
+%% `mcl-embedder/embed' needs a realm-issued provider grant (D25) naming this
+%% node, and without one nothing is advertised while the node looks healthy.
+%% The model loads lazily on the first call, so it is not probed here.
+health() ->
+    grant_health(grant_status()).
 
-%% WHAT THIS SERVICE ANNOUNCES IT CAN DO. Other services find this one by these
-%% names, so each entry is a promise that something answers.
-capabilities() -> [].
+grant_status() ->
+    try check_provider_grant:status()
+    catch _:_ -> #{}
+    end.
 
-%% THE AUTHORITY THIS SERVICE ASKS THE REALM FOR, and deliberately nothing more.
-%% Ask for exactly the topics you publish and subscribe to. Popped, an attacker
-%% gains precisely this and no more, which is the whole point of listing it.
-%%
-%% The scope is claimed now because it is the namespace every later resource
-%% hangs under, and a scope costs nothing while a rename costs every deployed
-%% peer.
+%% @doc Health from the per-procedure grant status. Exported for tests.
+-spec grant_health(#{binary() => granted | missing}) -> ok | {degraded, term()}.
+grant_health(Status) ->
+    missing(lists:sort([Proc || {Proc, missing} <- maps:to_list(Status)])).
+
+missing([])      -> ok;
+missing(Missing) -> {degraded, {no_provider_grant, Missing}}.
+
+%% `mcl-embedder/embed' (the org comes from config): text in, vectors out.
+%% See serve_embed for the request and reply.
+capabilities() ->
+    [#{name => <<"embed">>, version => 1, handler => {serve_embed, []}}].
+
+%% The authority is the D25 provider grant, issued by the realm per procedure,
+%% not something this service asks for.
 identity_spec() ->
     #{scope => <<"mcl-embedder">>,
       actions => [],
