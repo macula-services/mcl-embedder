@@ -16,7 +16,6 @@
 -behaviour(mcl_om_service).
 
 -export([info/0, start/1, stop/1, health/0, capabilities/0, identity_spec/0]).
--export([grant_health/1]).
 
 info() ->
     #{name => <<"mcl-embedder">>,
@@ -27,25 +26,11 @@ start(_Opts) -> mcl_embedder_sup:start_link().
 
 stop(_State) -> ok.
 
-%% Health is whether callers can REACH the procedure: serving
-%% `mcl-embedder/embed' needs a realm-issued provider grant (D25) naming this
-%% node, and without one nothing is advertised while the node looks healthy.
-%% The model loads lazily on the first call, so it is not probed here.
-health() ->
-    grant_health(grant_status()).
-
-grant_status() ->
-    try check_provider_grant:status()
-    catch _:_ -> #{}
-    end.
-
-%% @doc Health from the per-procedure grant status. Exported for tests.
--spec grant_health(#{binary() => granted | missing}) -> ok | {degraded, term()}.
-grant_health(Status) ->
-    missing(lists:sort([Proc || {Proc, missing} <- maps:to_list(Status)])).
-
-missing([])      -> ok;
-missing(Missing) -> {degraded, {no_provider_grant, Missing}}.
+%% Nothing of the service's own to report: whether callers can REACH the
+%% procedure (its realm-issued D25 provider grant) is reported by mcl_om's
+%% /health itself, combined with this verdict. The model loads lazily on the
+%% first call, so it is not probed here.
+health() -> ok.
 
 %% `mcl-embedder/embed' (the org comes from config): text in, vectors out.
 %% See serve_embed for the request and reply.

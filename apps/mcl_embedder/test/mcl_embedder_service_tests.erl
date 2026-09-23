@@ -77,25 +77,27 @@ the_shipped_config_names_the_org_test() ->
 %% Health: whether callers can reach it
 %%==============================================================================
 
-a_missing_provider_grant_is_degraded_test() ->
-    ?assertEqual({degraded, {no_provider_grant, [<<"mcl-embedder/embed">>]}},
-                 ?SERVICE:grant_health(#{<<"mcl-embedder/embed">> => missing})).
-
-a_granted_procedure_is_ok_test() ->
-    ?assertEqual(ok, ?SERVICE:grant_health(#{<<"mcl-embedder/embed">> => granted})),
-    ?assertEqual(ok, ?SERVICE:grant_health(#{})).
-
-health_without_the_grant_checker_running_is_ok_test() ->
+%% A missing D25 provider grant is reported by mcl_om itself (>= 0.26.3),
+%% combined with this service's own verdict, which is ok.
+the_service_itself_is_healthy_test() ->
     ?assertEqual(ok, ?SERVICE:health()).
+
+%% A build that resolved an mcl_om older than 0.26.3 would compile and lose the
+%% grant check without a word, so the function it rests on must exist.
+the_resolved_mcl_om_reports_provider_grants_test() ->
+    {module, _} = code:ensure_loaded(mcl_om_capabilities),
+    ?assert(erlang:function_exported(mcl_om_capabilities, provider_grants, 0)).
 
 identity_spec_asks_for_nothing_test() ->
     #{actions := Actions, resources := Resources} = ?SERVICE:identity_spec(),
     ?assertEqual([], Actions),
     ?assertEqual([], Resources).
 
-supervisor_runs_the_grant_check_test() ->
+%% Nothing to supervise: the procedure is served by mcl_om's provider path and
+%% the model by mcl_embed's own supervisor.
+supervisor_has_no_children_test() ->
     {ok, {_Flags, Children}} = mcl_embedder_sup:init([]),
-    ?assertEqual([check_provider_grant], [Id || #{id := Id} <- Children]).
+    ?assertEqual([], Children).
 
 %%==============================================================================
 %% The image: glibc, the real model, baked in

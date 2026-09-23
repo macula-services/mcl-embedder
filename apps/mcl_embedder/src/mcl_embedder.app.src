@@ -1,7 +1,7 @@
 {application, mcl_embedder, [
     {description, "Multilingual sentence embeddings as a mesh procedure, for callers that cannot run the ONNX model themselves"},
     {vsn, "0.1.0"},
-    {registered, [mcl_embedder_sup, check_provider_grant]},
+    {registered, [mcl_embedder_sup]},
     {mod, {mcl_embedder_app, []}},
     {applications, [
         kernel,

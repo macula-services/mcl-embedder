@@ -58,9 +58,9 @@ into the image at build time, so a container never downloads it.
    the named identity volume `mcl-embedder-secrets`.
 2. **Have the realm grant this node its provider authorization** for
    `mcl-embedder/embed` (D25). Until then nothing is advertised, every call
-   resolves to nothing, and `/health` says
-   `{degraded, {no_provider_grant, [<<"mcl-embedder/embed">>]}}`. A new identity
-   is a new, unadmitted node, so keep the volume.
+   resolves to nothing, and `/health` (mcl_om's own check) is degraded, naming
+   `mcl-embedder/embed` under `provider_grants`. A new identity is a new,
+   unadmitted node, so keep the volume.
 
 ## Health
 
