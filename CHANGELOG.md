@@ -5,6 +5,12 @@
 Ported from `hecate-services/hecate-embedder` 0.1.3 onto `mcl_om`, macula 12
 and `mcl_embed` 0.1.
 
+- **On `mcl_om` 0.28 with macula 12.2.** The service answers `mcl-embedder/info`,
+  which mcl_om adds (public facts: versions, labels, health word, procedures),
+  and a test sends that reply through macula's frame codec and checks it names
+  this service and the mcl_om 0.28 / macula 12.2 pair. 0.28 is the release
+  macula 12.2 needs: under 12.2 an older mcl_om lets a failed publish
+  announcement kill the publishing process.
 - **On `mcl_om` 0.27; the boot claim says which service, which box.** The claim
   carries `MCL_SERVICE_NAME=mcl-embedder` and the host's `MCL_BOX`, shown on the
   realm's Providers desk. 0.27 no longer brings barrel_docdb or rocksdb, so the

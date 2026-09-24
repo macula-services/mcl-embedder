@@ -41,6 +41,11 @@ The image is **Debian (glibc)**, not the Alpine every other mcl service uses:
 the ONNX Runtime fastembed links is prebuilt against glibc. The model is baked
 into the image at build time, so a container never downloads it.
 
+Like every mcl service, it also answers `mcl-embedder/info`, which mcl_om adds: its
+name, version and description, its org and claim labels, node id, the macula
+and mcl_om versions, uptime, the health word and the procedures it advertises.
+Open to any mesh caller, public facts only.
+
 ## Configuration
 
 | Variable | Default | Meaning |
