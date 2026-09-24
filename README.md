@@ -50,6 +50,8 @@ into the image at build time, so a container never downloads it.
 | `MACULA_STATION_SEEDS` | required | station hosts, `host[:port]`, comma-separated |
 | `MACULA_STATION_NODE_IDS` | required | the matching 64-hex station node ids |
 | `MCL_HEALTH_PORT` | `8480` | health endpoint |
+| `MCL_SERVICE_NAME` | `mcl-embedder` | label on the boot claim the realm's operator sees on the Providers desk |
+| `MCL_BOX` | unset | label naming the host, also on the boot claim; set it where you deploy |
 | `MCL_EMBED_MODEL_DIR` | `/models` | where the baked model is (set in the image) |
 
 ## Deploy
@@ -73,8 +75,12 @@ grant is `degraded`. The model loads on the first call and is not probed.
     rebar3 lint
 
 A Rust toolchain is needed: `mcl_embed` builds its NIF from source. The image
-builds the real model (`CARGO_FEATURES=real-embed`). OTP 28, pinned in
-`.tool-versions`, the `Containerfile` and CI.
+builds the real model (`CARGO_FEATURES=real-embed`). OTP 28.4.3, pinned in
+`.tool-versions`, the `Containerfile` and CI, and a test fails when they
+disagree with the VM running it. The image builds in the team's
+`ghcr.io/macula-io/macula-ci-otp` and runs on `ghcr.io/macula-io/macula-pq-runtime`
+(Debian trixie, glibc, which the ONNX Runtime needs), both pinned by dated tag
+and digest; CI runs in the same build image.
 
 ## License
 

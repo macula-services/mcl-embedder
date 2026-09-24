@@ -12,25 +12,28 @@
 # Celeron J4105 nodes, for example). Run this image on an AVX2 host and reach
 # it over the mesh; that is what the service is for.
 #
-# ⚠ THE RUNTIME IS PINNED IN TWO PLACES AND THEY MUST AGREE: here and
-# `lint.yml' beside it.
-FROM docker.io/erlang:28 AS builder
+# ⚠ THE TEAM IMAGE PAIR, PINNED BY DATED TAG AND DIGEST. macula-ci-otp is
+# macula-io/macula-ci-images' build image: OTP 28.4.3 on Debian trixie with an
+# OpenSSL carrying ML-DSA, rebar3 3.27.0 and Rust, all pinned. The release runs
+# on macula-pq-runtime of the same date, the same Debian, so its ERTS and NIFs
+# match the runtime's glibc. 20260923-1444 is the pair the rocksdb images are
+# derived from, so every mcl service sits on one base. lint.yml pins the same
+# build image, and the service tests guard all three pins.
+FROM ghcr.io/macula-io/macula-ci-otp:20260923-1444@sha256:dd2ba6eb858a0eacedf0179300323fe5c6da46fb308d22da0ca8cfcd1f0718dc AS builder
+
+# ⚠ THE OTP RELEASE, ASSERTED HERE because the image tag names a date, not a
+# release. The same check as lint.yml's toolchain step; the service tests read
+# this line and compare it with .tool-versions and lint's.
+RUN erl -noshell -eval ' \
+    Otp = string:trim(element(2, file:read_file(filename:join([code:root_dir(), "releases", erlang:system_info(otp_release), "OTP_VERSION"])))), \
+    Mldsa = lists:member(mldsa87, crypto:supports(public_keys)), \
+    io:format("OTP ~s, mldsa87 ~p~n", [Otp, Mldsa]), \
+    case {Otp, Mldsa} of \
+        {<<"28.4.3">>, true} -> halt(0); \
+        _                    -> halt(1) \
+    end.'
+
 WORKDIR /build
-
-# cmake/build-essential and the compression -dev packages: mcl_om pulls in
-# rocksdb (barrel_docdb) and khepri/ra transitively, even for a storeless
-# service. Rust: mcl_embed and macula compile their NIFs from source.
-RUN apt-get update && apt-get install -y --no-install-recommends \
-        git curl bash build-essential cmake \
-        libsnappy-dev liblz4-dev libzstd-dev libbz2-dev \
-    && rm -rf /var/lib/apt/lists/*
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs \
-        | sh -s -- -y --default-toolchain stable --profile minimal
-ENV PATH="/root/.cargo/bin:${PATH}"
-ENV MACULA_FORCE_SOURCE_BUILD=1
-
-RUN curl -fsSL https://s3.amazonaws.com/rebar3/rebar3 -o /usr/local/bin/rebar3 \
-    && chmod +x /usr/local/bin/rebar3
 
 COPY rebar.config ./
 RUN rebar3 get-deps
@@ -52,13 +55,12 @@ RUN mkdir -p /models && erl -noshell -pa _build/default/lib/mcl_embed/ebin \
 
 RUN rebar3 as prod release
 
-FROM docker.io/debian:trixie-slim
+FROM ghcr.io/macula-io/macula-pq-runtime:20260923-1444@sha256:15a5501b7277804c5a62c93121d157773d1401d238a1bf630ef4b50fc2f1df09
 LABEL org.opencontainers.image.source="https://github.com/macula-services/mcl-embedder"
-RUN apt-get update && apt-get install -y --no-install-recommends \
-        libssl3 zlib1g libbrotli1 libzstd1 libstdc++6 libncurses6 \
-        libsnappy1v5 liblz4-1 libbz2-1.0 \
-        ca-certificates curl \
-    && rm -rf /var/lib/apt/lists/*
+# The runtime image is Debian trixie (glibc, which the ONNX Runtime needs) and
+# carries what the release loads: OpenSSL 3.5, libz, libzstd, libstdc++,
+# libtinfo, and curl for the healthcheck below. The embed NIF links libssl,
+# libcrypto, libz and libzstd, all present.
 WORKDIR /app
 COPY --from=builder /build/_build/prod/rel/mcl_embedder ./
 COPY --from=builder /models /models
