@@ -61,3 +61,6 @@ jobs:
           tags: |
             ghcr.io/macula-services/mcl-embedder:latest
             ghcr.io/macula-services/mcl-embedder:${{ steps.tag.outputs.tag }}
+          # The commit the image was built from, readable from the image itself.
+          build-args: |
+            REVISION=${{ github.sha }}

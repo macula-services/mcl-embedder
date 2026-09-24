@@ -57,6 +57,10 @@ RUN rebar3 as prod release
 
 FROM ghcr.io/macula-io/macula-pq-runtime:20260923-1444@sha256:15a5501b7277804c5a62c93121d157773d1401d238a1bf630ef4b50fc2f1df09
 LABEL org.opencontainers.image.source="https://github.com/macula-services/mcl-embedder"
+# THIS image's commit (build-push passes github.sha). Without it the image
+# inherited its base image's label, which names macula-ci-images' commit.
+ARG REVISION=unknown
+LABEL org.opencontainers.image.revision="${REVISION}"
 # The runtime image is Debian trixie (glibc, which the ONNX Runtime needs) and
 # carries what the release loads: OpenSSL 3.5, libz, libzstd, libstdc++,
 # libtinfo, and curl for the healthcheck below. The embed NIF links libssl,
