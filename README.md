@@ -9,8 +9,7 @@ cannot run the model, by calling the one box that can.
 
 Built and tested locally, **not yet deployed**. Runs on macula 12 through
 `mcl_om`, on [`mcl_embed`](https://github.com/macula-services/mcl-embed)
-(fastembed over ONNX, `multilingual-e5-small`, 384 dimensions). It replaces
-`hecate-services/hecate-embedder` and inherits nothing from it.
+(fastembed over ONNX, `multilingual-e5-small`, 384 dimensions).
 
 ## The procedure
 
