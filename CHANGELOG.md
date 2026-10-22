@@ -1,5 +1,17 @@
 # Changelog
 
+## Unreleased
+
+- **macula is declared, at 16** (macula-codebase-checks#4, #14). The
+  service called macula modules and compiled against `macula_response`
+  without declaring the application: it arrived transitively through
+  `mcl_om`, so a rebuild took whatever major the newest mcl_om carried.
+  `macula` is now a direct dependency at `~> 16.0` and `mcl_om` is at
+  `~> 1.4`, the release whose own base is macula 16. 16.0 keeps wire 1.0,
+  so this service still speaks to every wire 1.0 box; what it adds is the
+  revocation bound (macula#118). This service gates no overlay and issues
+  no endorsement.
+
 ## 0.1.0 (unreleased)
 
 Ported from `hecate-services/hecate-embedder` 0.1.3 onto `mcl_om`, macula 12
