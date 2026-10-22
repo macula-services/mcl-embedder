@@ -38,7 +38,7 @@ there is no store and no database.
 | macula SDK | library, `~> 16.0`, wire 1.0 | QUIC transport, the PQ handshake, RPC dispatch to a handler by name, and the signed records the mesh DHT holds |
 | `mcl_embed` | library, `~> 0.1.1`, Rust NIF over ONNX | `embed/2`, `embed_query/2`, `embed_passage/2`, `embed_many/2` and `default_model/0` over fastembed: `multilingual-e5-small`, 384 dimensions, one `gen_server` per model wrapping the NIF and loaded lazily on the first call. The image builds the real backend (`CARGO_FEATURES=real-embed`); tests use a deterministic stub |
 | AVX2 host | host requirement | The ONNX Runtime SIGILLs on a CPU without AVX2, taking the node with it, so the box running this image must have it |
-| Deploy environment | environment | `MCL_REALM` and `MCL_REALM_KEY` admit the node; `MACULA_STATION_SEEDS` and `MACULA_STATION_NODE_IDS` are the pinned dial; `MCL_HEALTH_PORT` (8480), `MCL_EMBED_MODEL_DIR` (`/models`), `MCL_SERVICE_NAME` and `MCL_BOX` label the claim. The identity key lives on the named volume `/etc/mcl/secrets` |
+| Deploy environment | environment | `MCL_REALM` and `MCL_REALM_KEY` admit the node; `MACULA_STATION_SEEDS` and `MACULA_STATION_NODE_IDS` are the pinned dial; `MCL_HEALTH_PORT` (8480), `MCL_SERVICE_NAME` and `MCL_BOX` label the claim. `mcl_om` reads these at boot; `mcl_embed` reads only `MCL_EMBED_MODEL_DIR` (`/models`), on the first call. The identity key lives on the named volume `/etc/mcl/secrets` |
 
 `config/sys.config.src` fixes the org, `mcl-embedder`, which prefixes both
 procedure names, and pins the realm key: a boot with a malformed term is
