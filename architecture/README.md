@@ -31,7 +31,7 @@ there is no store and no database.
 | Component | Technology | Responsibility |
 | --- | --- | --- |
 | `mcl_embedder_app` | OTP application | `start/2` calls `mcl_om:boot/1` with `mcl_embedder_service`, which wires the mesh, the realm identity and health before the service starts |
-| `mcl_embedder_service` | the `mcl_om_service` behaviour | The six callbacks `mcl_om` resolves by name: `info/0`, `start/1`, `stop/1`, `health/0`, `capabilities/0`, `identity_spec/0`. `capabilities/0` declares one procedure, `embed`, handled by `serve_embed` |
+| `mcl_embedder_service` | the `mcl_om_service` behaviour | The six callbacks `mcl_om` resolves by name: `info/0`, `start/1`, `stop/1`, `health/0`, `capabilities/0`, `identity_spec/0`. `capabilities/0` declares one procedure of its own, `embed`, handled by `serve_embed` |
 | `mcl_embedder_sup` | supervisor, `one_for_one` | No children: the handler is started by the capability registration, so an empty child list is the honest shape, not a placeholder |
 | `serve_embed` | `macula_response` handler | `handle_request/2`: one text returns a vector, a list of texts a list of vectors. `kind` `query` or `passage` applies the model's e5 prefix; a request with no text is refused as `bad_request` |
 | `mcl_om` | library, `~> 1.4` | `boot/1`: loads the node identity key, joins the realm, opens the mesh pool, registers the declared capability and serves `/health` on `MCL_HEALTH_PORT`. Adds the open `Org/info` procedure to every node |
