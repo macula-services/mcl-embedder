@@ -59,13 +59,14 @@
 <text class="t-desc" x="706" y="100">Runs it on an AVX2 host and</text>
 <text class="t-desc" x="706" y="116">supplies the realm, the pinned</text>
 <text class="t-desc" x="706" y="132">seeds and the health port</text>
-<rect class="b-sys" x="365" y="186" width="270" height="136" rx="10"/>
+<rect class="b-sys" x="365" y="186" width="300" height="152" rx="10"/>
 <text class="t-name" x="381" y="214">mcl-embedder</text>
 <text class="t-type" x="381" y="232">[mcl_om mesh service, own box]</text>
-<text class="t-desc" x="381" y="256">Serves mcl-embedder/embed: text</text>
-<text class="t-desc" x="381" y="272">in, vectors out. Also</text>
-<text class="t-desc" x="381" y="288">mcl-embedder/info, and /health</text>
-<text class="t-desc" x="381" y="304">on 8480</text>
+<text class="t-desc" x="381" y="256">mcl-embedder/embed is its own procedure,</text>
+<text class="t-desc" x="381" y="272">and the only one; mcl_om adds info and</text>
+<text class="t-desc" x="381" y="288">get_limits, both open. capabilities/0 is</text>
+<text class="t-desc" x="381" y="304">the list. /health is on 8480; text in,</text>
+<text class="t-desc" x="381" y="320">vectors out</text>
 <rect class="b-mac" x="40" y="400" width="270" height="120" rx="10"/>
 <text class="t-name" x="56" y="428">macula-realm</text>
 <text class="t-type" x="56" y="446">[Macula infrastructure]</text>
@@ -83,10 +84,10 @@
 <text class="t-rel" x="183" y="176">and waits for the reply</text>
 <path class="edge" d="M825 150V168H580V186" marker-end="url(#a)"/>
 <text class="t-rel" x="690" y="160">deploys; sets the env</text>
-<path class="edge" d="M420 322V400" marker-end="url(#a)"/>
-<text class="t-rel" x="428" y="352">boot claim, provider grant</text>
-<path class="edge" d="M580 322V360H600V400" marker-end="url(#a)"/>
-<text class="t-rel" x="588" y="352">advertises embed and info</text>
+<path class="edge" d="M420 338V400" marker-end="url(#a)"/>
+<text class="t-rel" x="428" y="362">boot claim, provider grant</text>
+<path class="edge" d="M580 338V360H600V400" marker-end="url(#a)"/>
+<text class="t-rel" x="608" y="354">advertises on the DHT</text>
 <text class="t-desc" x="40" y="566">It talks to nothing outside the mesh at runtime: the ONNX model and its weights are</text>
 <text class="t-desc" x="40" y="584">baked into the image at build time, so a container never downloads them.</text>
 <rect class="b-sys" x="24" y="620" width="22" height="14" rx="3"/>

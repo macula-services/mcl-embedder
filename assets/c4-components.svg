@@ -80,7 +80,7 @@
 <text class="t-desc" x="362" y="308">realm admission, a mesh pool, the</text>
 <text class="t-desc" x="362" y="324">capability registration and /health</text>
 <text class="t-desc" x="362" y="340">on MCL_HEALTH_PORT. Adds the open</text>
-<text class="t-desc" x="362" y="356">Org/info procedure to every node</text>
+<text class="t-desc" x="362" y="356">Org/info and Org/get_limits</text>
 <rect class="b-mac" x="660" y="222" width="308" height="152" rx="10"/>
 <text class="t-code" x="676" y="250">macula SDK</text>
 <text class="t-type" x="676" y="268">[library, ~&gt; 16.0, wire 1.0]</text>
@@ -104,8 +104,8 @@
 <text class="t-name" x="56" y="648">Deploy environment</text>
 <text class="t-type" x="56" y="666">[environment, from the host or the compose file]</text>
 <text class="t-desc" x="56" y="690">MCL_REALM and MCL_REALM_KEY admit the node; MACULA_STATION_SEEDS and MACULA_STATION_NODE_IDS</text>
-<text class="t-desc" x="56" y="706">are the pinned dial; MCL_HEALTH_PORT (8480), MCL_EMBED_MODEL_DIR (/models), MCL_SERVICE_NAME</text>
-<text class="t-desc" x="56" y="722">and MCL_BOX label the claim. The identity key lives on the named volume /etc/mcl/secrets</text>
+<text class="t-desc" x="56" y="706">are the pinned dial; MCL_HEALTH_PORT is 8480; MCL_SERVICE_NAME and MCL_BOX label the claim. mcl_embed</text>
+<text class="t-desc" x="56" y="722">reads MCL_EMBED_MODEL_DIR (/models) on the first call. The identity key lives on the named volume /etc/mcl/secrets</text>
 <path class="edge" d="M322 110H346" marker-end="url(#a)"/>
 <text class="t-rel" x="334" y="102" text-anchor="middle">boots</text>
 <path class="edge" d="M636 130H660" marker-end="url(#a)"/>
@@ -121,7 +121,7 @@
 <text class="t-rel" x="348" y="592">read on the first call</text>
 <path class="edge" d="M40 666H24V400H500V374" marker-end="url(#a)"/>
 <text class="t-rel" x="300" y="394">read at boot</text>
-<text class="t-desc" x="40" y="752">config/sys.config.src fixes the org, mcl-embedder, which prefixes both procedure names, and pins the</text>
+<text class="t-desc" x="40" y="752">config/sys.config.src fixes the org, mcl-embedder, which prefixes the procedure names, and pins the</text>
 <text class="t-desc" x="40" y="770">realm key: a boot with a malformed term is refused. The model loads on the first call, so</text>
 <text class="t-desc" x="40" y="788">/health never probes it, and deploy/docker-compose.yml runs the container on the host network.</text>
 <rect class="b-sys" x="24" y="806" width="22" height="14" rx="3"/>

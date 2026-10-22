@@ -137,9 +137,12 @@ def context():
     d.box("b-per", 690, 30, 270, 120, "Service operator", "[Person]",
           ["Runs it on an AVX2 host and", "supplies the realm, the pinned",
            "seeds and the health port"], person=True)
-    d.box("b-sys", 365, 186, 270, 136, "mcl-embedder", "[mcl_om mesh service, own box]",
-          ["Serves mcl-embedder/embed: text", "in, vectors out. Also",
-           "mcl-embedder/info, and /health", "on 8480"])
+    d.box("b-sys", 365, 186, 300, 152, "mcl-embedder", "[mcl_om mesh service, own box]",
+          ["mcl-embedder/embed is its own procedure,",
+           "and the only one; mcl_om adds info and",
+           "get_limits, both open. capabilities/0 is",
+           "the list. /health is on 8480; text in,",
+           "vectors out"])
     d.box("b-mac", 40, 400, 270, 120, "macula-realm", "[Macula infrastructure]",
           ["Admits the node, and grants the", "D25 provider authorization for",
            "mcl-embedder/embed"])
@@ -150,8 +153,8 @@ def context():
     d.text("t-rel", 183, 160, "calls mcl-embedder/embed,"); d.text("t-rel", 183, 176, "and waits for the reply")
     d.edge("M825 150V168H580V186")
     d.text("t-rel", 690, 160, "deploys; sets the env")
-    d.edge("M420 322V400"); d.text("t-rel", 428, 352, "boot claim, provider grant")
-    d.edge("M580 322V360H600V400"); d.text("t-rel", 588, 352, "advertises embed and info")
+    d.edge("M420 338V400"); d.text("t-rel", 428, 362, "boot claim, provider grant")
+    d.edge("M580 338V360H600V400"); d.text("t-rel", 608, 354, "advertises on the DHT")
     d.text("t-desc", 40, 566, "It talks to nothing outside the mesh at runtime: the ONNX model and its weights are")
     d.text("t-desc", 40, 584, "baked into the image at build time, so a container never downloads them.")
     d.legend(620, boundary=False)
@@ -177,7 +180,7 @@ def components():
     d.box("b-mac", 346, 222, 290, 152, "mcl_om", "[library, ~> 1.4]",
           ["boot/1: the node identity key,", "realm admission, a mesh pool, the",
            "capability registration and /health", "on MCL_HEALTH_PORT. Adds the open",
-           "Org/info procedure to every node"], code=True)
+           "Org/info and Org/get_limits"], code=True)
     d.box("b-mac", 660, 222, 308, 152, "macula SDK", "[library, ~> 16.0, wire 1.0]",
           ["QUIC transport, the PQ handshake,", "RPC dispatch to a handler by name,",
            "and the signed records the mesh DHT", "holds"], code=True)
@@ -190,8 +193,8 @@ def components():
            "this image must have it"])
     d.box("b-ext", 40, 620, 920, 120, "Deploy environment", "[environment, from the host or the compose file]",
           ["MCL_REALM and MCL_REALM_KEY admit the node; MACULA_STATION_SEEDS and MACULA_STATION_NODE_IDS",
-           "are the pinned dial; MCL_HEALTH_PORT (8480), MCL_EMBED_MODEL_DIR (/models), MCL_SERVICE_NAME",
-           "and MCL_BOX label the claim. The identity key lives on the named volume /etc/mcl/secrets"])
+           "are the pinned dial; MCL_HEALTH_PORT is 8480; MCL_SERVICE_NAME and MCL_BOX label the claim. mcl_embed",
+           "reads MCL_EMBED_MODEL_DIR (/models) on the first call. The identity key lives on the named volume /etc/mcl/secrets"])
     d.edge("M322 110H346"); d.text("t-rel", 334, 102, "boots", anchor="middle")
     d.edge("M636 130H660"); d.text("t-rel", 648, 122, "starts", anchor="middle")
     d.edge("M346 150H334V290H322"); d.text("t-rel", 340, 220, "declares in capabilities/0", anchor="middle", rotate=-90)
@@ -199,7 +202,7 @@ def components():
     d.edge("M180 374V420"); d.text("t-rel", 188, 414, "embeds with")
     d.edge("M340 620V540"); d.text("t-rel", 348, 576, "MCL_EMBED_MODEL_DIR,"); d.text("t-rel", 348, 592, "read on the first call")
     d.edge("M40 666H24V400H500V374"); d.text("t-rel", 300, 394, "read at boot")
-    d.text("t-desc", 40, 752, "config/sys.config.src fixes the org, mcl-embedder, which prefixes both procedure names, and pins the")
+    d.text("t-desc", 40, 752, "config/sys.config.src fixes the org, mcl-embedder, which prefixes the procedure names, and pins the")
     d.text("t-desc", 40, 770, "realm key: a boot with a malformed term is refused. The model loads on the first call, so")
     d.text("t-desc", 40, 788, "/health never probes it, and deploy/docker-compose.yml runs the container on the host network.")
     d.legend(806)
