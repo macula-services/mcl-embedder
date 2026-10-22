@@ -159,8 +159,8 @@ def context():
 
 
 def components():
-    d = Diagram("c4-components.svg", "mcl-embedder components", 1000, 800)
-    d.bound(16, 40, 968, 480, "mcl-embedder [Container]")
+    d = Diagram("c4-components.svg", "mcl-embedder components", 1000, 840)
+    d.bound(16, 40, 968, 520, "mcl-embedder [Container]")
     d.box("b-cmp", 32, 70, 290, 120, "mcl_embedder_app", "[OTP application]",
           ["Application entry: start/2 calls", "mcl_om:boot/1 with this service",
            "module, which wires the mesh"], code=True)
@@ -181,27 +181,28 @@ def components():
     d.box("b-mac", 660, 222, 308, 152, "macula SDK", "[library, ~> 16.0, wire 1.0]",
           ["QUIC transport, the PQ handshake,", "RPC dispatch to a handler by name,",
            "and the signed records the mesh DHT", "holds"], code=True)
-    d.box("b-mac", 32, 390, 624, 120, "mcl_embed", "[library, ~> 0.1.1, Rust NIF over ONNX]",
+    d.box("b-mac", 32, 420, 624, 120, "mcl_embed", "[library, ~> 0.1.1, Rust NIF over ONNX]",
           ["embed/2, embed_query/2, embed_passage/2, embed_many/2 and default_model/0, over",
            "fastembed: multilingual-e5-small, 384 dimensions, loaded lazily on the first call.",
            "The image builds the real backend with CARGO_FEATURES=real-embed; tests use a stub"], code=True)
-    d.box("b-ext", 660, 390, 308, 120, "AVX2 host", "[Host requirement]",
+    d.box("b-ext", 660, 420, 308, 120, "AVX2 host", "[Host requirement]",
           ["The ONNX Runtime SIGILLs on a CPU", "without AVX2, so the box running",
            "this image must have it"])
-    d.box("b-ext", 40, 574, 920, 120, "Deploy environment", "[environment, from the host or the compose file]",
+    d.box("b-ext", 40, 620, 920, 120, "Deploy environment", "[environment, from the host or the compose file]",
           ["MCL_REALM and MCL_REALM_KEY admit the node; MACULA_STATION_SEEDS and MACULA_STATION_NODE_IDS",
            "are the pinned dial; MCL_HEALTH_PORT (8480), MCL_EMBED_MODEL_DIR (/models), MCL_SERVICE_NAME",
            "and MCL_BOX label the claim. The identity key lives on the named volume /etc/mcl/secrets"])
     d.edge("M322 110H346"); d.text("t-rel", 334, 102, "boots", anchor="middle")
     d.edge("M636 130H660"); d.text("t-rel", 648, 122, "starts", anchor="middle")
-    d.edge("M500 190V210H180V222"); d.text("t-rel", 345, 205, "declares in capabilities/0")
-    d.edge("M600 222V210H700V222"); d.text("t-rel", 650, 204, "replies through", anchor="middle")
-    d.edge("M180 374V390"); d.text("t-rel", 188, 386, "embeds with")
-    d.edge("M340 574V510"); d.text("t-rel", 348, 540, "read at boot")
-    d.text("t-desc", 40, 706, "config/sys.config.src fixes the org, mcl-embedder, which prefixes both procedure names, and pins the")
-    d.text("t-desc", 40, 724, "realm key: a boot with a malformed term is refused. The model loads on the first call, so")
-    d.text("t-desc", 40, 742, "/health never probes it, and deploy/docker-compose.yml runs the container on the host network.")
-    d.legend(760)
+    d.edge("M346 150H334V290H322"); d.text("t-rel", 340, 220, "declares in capabilities/0", anchor="middle", rotate=-90)
+    d.edge("M300 222V200H644V300H660"); d.text("t-rel", 590, 212, "replies through", anchor="middle")
+    d.edge("M180 374V420"); d.text("t-rel", 188, 414, "embeds with")
+    d.edge("M340 620V540"); d.text("t-rel", 348, 576, "MCL_EMBED_MODEL_DIR,"); d.text("t-rel", 348, 592, "read on the first call")
+    d.edge("M40 666H24V400H500V374"); d.text("t-rel", 300, 394, "read at boot")
+    d.text("t-desc", 40, 752, "config/sys.config.src fixes the org, mcl-embedder, which prefixes both procedure names, and pins the")
+    d.text("t-desc", 40, 770, "realm key: a boot with a malformed term is refused. The model loads on the first call, so")
+    d.text("t-desc", 40, 788, "/health never probes it, and deploy/docker-compose.yml runs the container on the host network.")
+    d.legend(806)
     d.write()
 
 

@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 800" role="img" aria-label="mcl-embedder components">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 840" role="img" aria-label="mcl-embedder components">
 <title>mcl-embedder components</title>
 <style>
 .t-name { font-family: "Atkinson Hyperlegible", "Segoe UI", system-ui, -apple-system, Helvetica, Arial, sans-serif; font-size: 15px; font-weight: 700; }
@@ -44,8 +44,8 @@
 }
 </style>
 <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="arrowhead" d="M0 0L10 5L0 10z"/></marker></defs>
-<rect class="bg" x="0" y="0" width="1000" height="800"/>
-<rect class="bound" x="16" y="40" width="968" height="480" rx="12"/>
+<rect class="bg" x="0" y="0" width="1000" height="840"/>
+<rect class="bound" x="16" y="40" width="968" height="520" rx="12"/>
 <text class="t-bound" x="32" y="62">mcl-embedder [Container]</text>
 <rect class="b-cmp" x="32" y="70" width="290" height="120" rx="10"/>
 <text class="t-code" x="48" y="98">mcl_embedder_app</text>
@@ -88,49 +88,52 @@
 <text class="t-desc" x="676" y="308">RPC dispatch to a handler by name,</text>
 <text class="t-desc" x="676" y="324">and the signed records the mesh DHT</text>
 <text class="t-desc" x="676" y="340">holds</text>
-<rect class="b-mac" x="32" y="390" width="624" height="120" rx="10"/>
-<text class="t-code" x="48" y="418">mcl_embed</text>
-<text class="t-type" x="48" y="436">[library, ~&gt; 0.1.1, Rust NIF over ONNX]</text>
-<text class="t-desc" x="48" y="460">embed/2, embed_query/2, embed_passage/2, embed_many/2 and default_model/0, over</text>
-<text class="t-desc" x="48" y="476">fastembed: multilingual-e5-small, 384 dimensions, loaded lazily on the first call.</text>
-<text class="t-desc" x="48" y="492">The image builds the real backend with CARGO_FEATURES=real-embed; tests use a stub</text>
-<rect class="b-ext" x="660" y="390" width="308" height="120" rx="10"/>
-<text class="t-name" x="676" y="418">AVX2 host</text>
-<text class="t-type" x="676" y="436">[Host requirement]</text>
-<text class="t-desc" x="676" y="460">The ONNX Runtime SIGILLs on a CPU</text>
-<text class="t-desc" x="676" y="476">without AVX2, so the box running</text>
-<text class="t-desc" x="676" y="492">this image must have it</text>
-<rect class="b-ext" x="40" y="574" width="920" height="120" rx="10"/>
-<text class="t-name" x="56" y="602">Deploy environment</text>
-<text class="t-type" x="56" y="620">[environment, from the host or the compose file]</text>
-<text class="t-desc" x="56" y="644">MCL_REALM and MCL_REALM_KEY admit the node; MACULA_STATION_SEEDS and MACULA_STATION_NODE_IDS</text>
-<text class="t-desc" x="56" y="660">are the pinned dial; MCL_HEALTH_PORT (8480), MCL_EMBED_MODEL_DIR (/models), MCL_SERVICE_NAME</text>
-<text class="t-desc" x="56" y="676">and MCL_BOX label the claim. The identity key lives on the named volume /etc/mcl/secrets</text>
+<rect class="b-mac" x="32" y="420" width="624" height="120" rx="10"/>
+<text class="t-code" x="48" y="448">mcl_embed</text>
+<text class="t-type" x="48" y="466">[library, ~&gt; 0.1.1, Rust NIF over ONNX]</text>
+<text class="t-desc" x="48" y="490">embed/2, embed_query/2, embed_passage/2, embed_many/2 and default_model/0, over</text>
+<text class="t-desc" x="48" y="506">fastembed: multilingual-e5-small, 384 dimensions, loaded lazily on the first call.</text>
+<text class="t-desc" x="48" y="522">The image builds the real backend with CARGO_FEATURES=real-embed; tests use a stub</text>
+<rect class="b-ext" x="660" y="420" width="308" height="120" rx="10"/>
+<text class="t-name" x="676" y="448">AVX2 host</text>
+<text class="t-type" x="676" y="466">[Host requirement]</text>
+<text class="t-desc" x="676" y="490">The ONNX Runtime SIGILLs on a CPU</text>
+<text class="t-desc" x="676" y="506">without AVX2, so the box running</text>
+<text class="t-desc" x="676" y="522">this image must have it</text>
+<rect class="b-ext" x="40" y="620" width="920" height="120" rx="10"/>
+<text class="t-name" x="56" y="648">Deploy environment</text>
+<text class="t-type" x="56" y="666">[environment, from the host or the compose file]</text>
+<text class="t-desc" x="56" y="690">MCL_REALM and MCL_REALM_KEY admit the node; MACULA_STATION_SEEDS and MACULA_STATION_NODE_IDS</text>
+<text class="t-desc" x="56" y="706">are the pinned dial; MCL_HEALTH_PORT (8480), MCL_EMBED_MODEL_DIR (/models), MCL_SERVICE_NAME</text>
+<text class="t-desc" x="56" y="722">and MCL_BOX label the claim. The identity key lives on the named volume /etc/mcl/secrets</text>
 <path class="edge" d="M322 110H346" marker-end="url(#a)"/>
 <text class="t-rel" x="334" y="102" text-anchor="middle">boots</text>
 <path class="edge" d="M636 130H660" marker-end="url(#a)"/>
 <text class="t-rel" x="648" y="122" text-anchor="middle">starts</text>
-<path class="edge" d="M500 190V210H180V222" marker-end="url(#a)"/>
-<text class="t-rel" x="345" y="205">declares in capabilities/0</text>
-<path class="edge" d="M600 222V210H700V222" marker-end="url(#a)"/>
-<text class="t-rel" x="650" y="204" text-anchor="middle">replies through</text>
-<path class="edge" d="M180 374V390" marker-end="url(#a)"/>
-<text class="t-rel" x="188" y="386">embeds with</text>
-<path class="edge" d="M340 574V510" marker-end="url(#a)"/>
-<text class="t-rel" x="348" y="540">read at boot</text>
-<text class="t-desc" x="40" y="706">config/sys.config.src fixes the org, mcl-embedder, which prefixes both procedure names, and pins the</text>
-<text class="t-desc" x="40" y="724">realm key: a boot with a malformed term is refused. The model loads on the first call, so</text>
-<text class="t-desc" x="40" y="742">/health never probes it, and deploy/docker-compose.yml runs the container on the host network.</text>
-<rect class="b-sys" x="24" y="760" width="22" height="14" rx="3"/>
-<text class="t-leg" x="54" y="772">In scope</text>
-<rect class="b-per" x="110.8" y="760" width="22" height="14" rx="3"/>
-<text class="t-leg" x="140.8" y="772">Person</text>
-<rect class="b-mac" x="184.39999999999998" y="760" width="22" height="14" rx="3"/>
-<text class="t-leg" x="214.39999999999998" y="772">Macula infrastructure</text>
-<rect class="b-ext" x="357.0" y="760" width="22" height="14" rx="3"/>
-<text class="t-leg" x="387.0" y="772">External system</text>
-<rect class="b-cmp" x="490.0" y="760" width="22" height="14" rx="3"/>
-<text class="t-leg" x="520.0" y="772">Container or component</text>
-<rect class="bound" x="669.2" y="760" width="22" height="14" rx="3"/>
-<text class="t-leg" x="699.2" y="772">Boundary</text>
+<path class="edge" d="M346 150H334V290H322" marker-end="url(#a)"/>
+<text class="t-rel" x="340" y="220" text-anchor="middle" transform="rotate(-90 340 220)">declares in capabilities/0</text>
+<path class="edge" d="M300 222V200H644V300H660" marker-end="url(#a)"/>
+<text class="t-rel" x="590" y="212" text-anchor="middle">replies through</text>
+<path class="edge" d="M180 374V420" marker-end="url(#a)"/>
+<text class="t-rel" x="188" y="414">embeds with</text>
+<path class="edge" d="M340 620V540" marker-end="url(#a)"/>
+<text class="t-rel" x="348" y="576">MCL_EMBED_MODEL_DIR,</text>
+<text class="t-rel" x="348" y="592">read on the first call</text>
+<path class="edge" d="M40 666H24V400H500V374" marker-end="url(#a)"/>
+<text class="t-rel" x="300" y="394">read at boot</text>
+<text class="t-desc" x="40" y="752">config/sys.config.src fixes the org, mcl-embedder, which prefixes both procedure names, and pins the</text>
+<text class="t-desc" x="40" y="770">realm key: a boot with a malformed term is refused. The model loads on the first call, so</text>
+<text class="t-desc" x="40" y="788">/health never probes it, and deploy/docker-compose.yml runs the container on the host network.</text>
+<rect class="b-sys" x="24" y="806" width="22" height="14" rx="3"/>
+<text class="t-leg" x="54" y="818">In scope</text>
+<rect class="b-per" x="110.8" y="806" width="22" height="14" rx="3"/>
+<text class="t-leg" x="140.8" y="818">Person</text>
+<rect class="b-mac" x="184.39999999999998" y="806" width="22" height="14" rx="3"/>
+<text class="t-leg" x="214.39999999999998" y="818">Macula infrastructure</text>
+<rect class="b-ext" x="357.0" y="806" width="22" height="14" rx="3"/>
+<text class="t-leg" x="387.0" y="818">External system</text>
+<rect class="b-cmp" x="490.0" y="806" width="22" height="14" rx="3"/>
+<text class="t-leg" x="520.0" y="818">Container or component</text>
+<rect class="bound" x="669.2" y="806" width="22" height="14" rx="3"/>
+<text class="t-leg" x="699.2" y="818">Boundary</text>
 </svg>
