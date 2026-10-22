@@ -28,8 +28,8 @@ cannot run the model, by calling the one box that can.
 
 ## Status
 
-Built and tested locally, **not yet deployed**. Builds on macula 14 through
-`mcl_om` 0.42 (its `~> 0.28` takes the last 0.x; not yet wire 1.0), on [`mcl_embed`](https://github.com/macula-services/mcl-embed)
+Built and tested locally, **not yet deployed**. Builds on macula 16 through
+`mcl_om` 1.4 (wire 1.0, the wire the fleet has spoken since 19 Oct), on [`mcl_embed`](https://github.com/macula-services/mcl-embed)
 (fastembed over ONNX, `multilingual-e5-small`, 384 dimensions).
 
 ## The procedure
