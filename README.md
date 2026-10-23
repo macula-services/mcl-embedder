@@ -28,8 +28,8 @@ cannot run the model, by calling the one box that can.
 
 ## Status
 
-Built and tested locally, **not yet deployed**. Builds on macula 14 through
-`mcl_om` 0.42 (its `~> 0.28` takes the last 0.x; not yet wire 1.0), on [`mcl_embed`](https://github.com/macula-services/mcl-embed)
+Built and tested locally, **not yet deployed**. Builds on macula 16 through
+`mcl_om` 1.4 (wire 1.0, the wire the fleet has spoken since 19 Oct), on [`mcl_embed`](https://github.com/macula-services/mcl-embed)
 (fastembed over ONNX, `multilingual-e5-small`, 384 dimensions).
 
 ## The procedure
@@ -61,10 +61,12 @@ The image is **Debian (glibc)**, not the Alpine every other mcl service uses:
 the ONNX Runtime fastembed links is prebuilt against glibc. The model is baked
 into the image at build time, so a container never downloads it.
 
-Like every mcl service, it also answers `mcl-embedder/info`, which mcl_om adds: its
-name, version and description, its org and claim labels, node id, the macula
-and mcl_om versions, uptime, the health word and the procedures it advertises.
-Open to any mesh caller, public facts only.
+`mcl-embedder/embed` is the service's own procedure, and the only one; `mcl_om`
+adds `mcl-embedder/info` and `mcl-embedder/get_limits` to every service, both
+open; `capabilities/0` is the list. `info` answers with the service's name,
+version and description, its org and claim labels, node id, the macula and
+mcl_om versions, uptime, the health word and the capabilities it advertises;
+`get_limits` answers with the inbound limits. Public facts only.
 
 ## Configuration
 
@@ -83,15 +85,16 @@ Open to any mesh caller, public facts only.
 
 1. Run it on an **AVX2** host, with `deploy/docker-compose.yml`, which mounts
    the named identity volume `mcl-embedder-secrets`.
-2. **Have the realm grant this node its provider authorization** for
-   `mcl-embedder/embed` (D25). Until then nothing is advertised, every call
-   resolves to nothing, and `/health` (mcl_om's own check) is degraded, naming
-   `mcl-embedder/embed` under `provider_grants`. A new identity is a new,
-   unadmitted node, so keep the volume.
+2. **Have the realm grant this node its provider authorizations** (D25), a grant
+   per org procedure, `mcl-embedder/embed` among them. Until then its own
+   procedure is not advertised,
+   a call to it resolves to nothing, and `/health` (mcl_om's own check) is
+   degraded, naming `mcl-embedder/embed` under `provider_grants`. A new
+   identity is a new, unadmitted node, so keep the volume.
 
 ## Health
 
-`/health` reports whether callers can reach the procedure: a missing provider
+`/health` reports whether callers can reach its own procedure: a missing provider
 grant is `degraded`. The model loads on the first call and is not probed.
 
 ## Build and test
