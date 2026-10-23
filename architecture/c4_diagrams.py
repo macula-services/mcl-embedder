@@ -137,7 +137,7 @@ def context():
     d.box("b-per", 690, 30, 270, 120, "Service operator", "[Person]",
           ["Runs it on an AVX2 host and", "supplies the realm, the pinned",
            "seeds and the health port"], person=True)
-    d.box("b-sys", 365, 186, 300, 152, "mcl-embedder", "[mcl_om mesh service, own box]",
+    d.box("b-sys", 365, 186, 300, 152, "mcl-embedder", "[mcl_om mesh service]",
           ["mcl-embedder/embed is its own procedure.",
            "mcl_om adds info and get_limits, both",
            "open. capabilities/0 is the list.",
@@ -149,10 +149,10 @@ def context():
           ["The pinned seeds are its entry", "points (QUIC); the mesh DHT",
            "carries what it publishes"])
     d.edge("M175 150V168H420V186")
-    d.text("t-rel", 183, 160, "calls mcl-embedder/embed,"); d.text("t-rel", 183, 176, "and waits for the reply")
+    d.text("t-rel", 183, 160, "calls mcl-embedder/embed")
     d.edge("M825 150V168H580V186")
     d.text("t-rel", 690, 160, "deploys; sets the env")
-    d.edge("M420 338V400"); d.text("t-rel", 428, 362, "boot claim, provider grant")
+    d.edge("M420 338V370H175V400"); d.text("t-rel", 183, 362, "boot claim, provider grant")
     d.edge("M580 338V360H600V400"); d.text("t-rel", 608, 354, "advertises on the DHT")
     d.text("t-desc", 40, 566, "It talks to nothing outside the mesh at runtime: the ONNX model and its weights are")
     d.text("t-desc", 40, 584, "baked into the image at build time, so a container never downloads them.")

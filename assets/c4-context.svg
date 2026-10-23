@@ -61,7 +61,7 @@
 <text class="t-desc" x="706" y="132">seeds and the health port</text>
 <rect class="b-sys" x="365" y="186" width="300" height="152" rx="10"/>
 <text class="t-name" x="381" y="214">mcl-embedder</text>
-<text class="t-type" x="381" y="232">[mcl_om mesh service, own box]</text>
+<text class="t-type" x="381" y="232">[mcl_om mesh service]</text>
 <text class="t-desc" x="381" y="256">mcl-embedder/embed is its own procedure.</text>
 <text class="t-desc" x="381" y="272">mcl_om adds info and get_limits, both</text>
 <text class="t-desc" x="381" y="288">open. capabilities/0 is the list.</text>
@@ -79,12 +79,11 @@
 <text class="t-desc" x="381" y="486">points (QUIC); the mesh DHT</text>
 <text class="t-desc" x="381" y="502">carries what it publishes</text>
 <path class="edge" d="M175 150V168H420V186" marker-end="url(#a)"/>
-<text class="t-rel" x="183" y="160">calls mcl-embedder/embed,</text>
-<text class="t-rel" x="183" y="176">and waits for the reply</text>
+<text class="t-rel" x="183" y="160">calls mcl-embedder/embed</text>
 <path class="edge" d="M825 150V168H580V186" marker-end="url(#a)"/>
 <text class="t-rel" x="690" y="160">deploys; sets the env</text>
-<path class="edge" d="M420 338V400" marker-end="url(#a)"/>
-<text class="t-rel" x="428" y="362">boot claim, provider grant</text>
+<path class="edge" d="M420 338V370H175V400" marker-end="url(#a)"/>
+<text class="t-rel" x="183" y="362">boot claim, provider grant</text>
 <path class="edge" d="M580 338V360H600V400" marker-end="url(#a)"/>
 <text class="t-rel" x="608" y="354">advertises on the DHT</text>
 <text class="t-desc" x="40" y="566">It talks to nothing outside the mesh at runtime: the ONNX model and its weights are</text>
