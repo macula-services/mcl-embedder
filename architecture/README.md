@@ -17,8 +17,8 @@ capability path, and answers `/health` on 8480.
 | mcl-embedder | In scope | `mcl-embedder/embed` is its own procedure, and the only one; `mcl_om` adds `mcl-embedder/info` and `mcl-embedder/get_limits` to every service, both open; `capabilities/0` is the list. Text in, vectors out, with `/health` on 8480. The model is baked into the image |
 | Mesh caller | Person | A service or agent that cannot run the ONNX model itself. mcl-rag's `rag_embed_mcl_embedder` provider is one |
 | Service operator | Person | Runs the image on an AVX2 host and supplies the realm, the pinned station seeds and the health port |
-| macula-realm | Macula infrastructure | Admits the node and issues its D25 provider authorization for `mcl-embedder/embed`; until it does, the embed procedure is not advertised and `/health` is degraded |
-| Macula stations, mesh DHT | Macula infrastructure | The pinned seeds are the node's entry points over QUIC; the DHT carries the capability it advertises |
+| macula-realm | Macula infrastructure | Admits the node and issues the D25 provider authorizations its org procedures need, `mcl-embedder/embed` among them; until it does, its own embed procedure is not advertised and `/health` is degraded |
+| Macula stations, mesh DHT | Macula infrastructure | The pinned seeds are the node's entry points over QUIC; the DHT holds its own procedure's advert and carries what it publishes |
 
 It talks to nothing outside the mesh at runtime. The ONNX model and its weights
 are baked into the image at build time, so a container never downloads them, and
@@ -32,7 +32,7 @@ there is no store and no database.
 | --- | --- | --- |
 | `mcl_embedder_app` | OTP application | `start/2` calls `mcl_om:boot/1` with `mcl_embedder_service`, which wires the mesh, the realm identity and health before the service starts |
 | `mcl_embedder_service` | the `mcl_om_service` behaviour | The six callbacks `mcl_om` resolves by name: `info/0`, `start/1`, `stop/1`, `health/0`, `capabilities/0`, `identity_spec/0`. `capabilities/0` declares its own procedure, `embed`, handled by `serve_embed` |
-| `mcl_embedder_sup` | supervisor, `one_for_one` | No children: the handler is started by the capability registration, so an empty child list is the honest shape, not a placeholder |
+| `mcl_embedder_sup` | supervisor, `one_for_one` | No children: the handler is started by mcl-om's capability registration, so an empty child list is the honest shape, not a placeholder |
 | `serve_embed` | `macula_response` handler | `handle_request/2`: one text returns a vector, a list of texts a list of vectors. `kind` `query` or `passage` applies the model's e5 prefix; a request with no text is refused as `bad_request` |
 | `mcl_om` | library, `~> 1.4` | `boot/1`: loads the node identity key, joins the realm, opens the mesh pool, registers the declared capability and serves `/health` on `MCL_HEALTH_PORT`. Adds the open `Org/info` and `Org/get_limits`, which every service gets |
 | macula SDK | library, `~> 16.0`, wire 1.0 | QUIC transport, the PQ handshake, RPC dispatch to a handler by name, and the signed records the mesh DHT holds |
@@ -40,7 +40,7 @@ there is no store and no database.
 | AVX2 host | host requirement | The ONNX Runtime SIGILLs on a CPU without AVX2, taking the node with it, so the box running this image must have it |
 | Deploy environment | environment | `MCL_REALM` and `MCL_REALM_KEY` admit the node; `MACULA_STATION_SEEDS` and `MACULA_STATION_NODE_IDS` are the pinned dial; `MCL_HEALTH_PORT` (8480) is the health endpoint, and `MCL_SERVICE_NAME` and `MCL_BOX` label the claim. `mcl_om` reads these at boot; `mcl_embed` reads only `MCL_EMBED_MODEL_DIR` (`/models`), on the first call. The identity key lives on the named volume `/etc/mcl/secrets` |
 
-`config/sys.config.src` fixes the org, `mcl-embedder`, which prefixes the
+`config/sys.config.src` fixes the org, `mcl-embedder`, which prefixes
 procedure names, and pins the realm key: a boot with a malformed term is
 refused. The model loads on the first call, so `/health` never probes it.
 `deploy/docker-compose.yml` runs the container on the host network, because the

@@ -109,8 +109,8 @@ jobs:
       digest: ${{ needs.build-and-push.outputs.digest }}
 
   # :latest moves LAST: only on a v* tag, and only once attest has signed and attested this
-  # digest. A consumer that pulls :latest in the window between push and signature would
-  # otherwise refuse the release (and remember that for an hour).
+  # digest. A consumer that took the moving tag in the window between push and signature
+  # would otherwise refuse the release (and remember that for an hour).
   promote-latest:
     needs: [build-and-push, attest]
     if: startsWith(github.ref, 'refs/tags/v') && needs.build-and-push.outputs.digest != ''

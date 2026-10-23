@@ -85,15 +85,16 @@ mcl_om versions, uptime, the health word and the capabilities it advertises;
 
 1. Run it on an **AVX2** host, with `deploy/docker-compose.yml`, which mounts
    the named identity volume `mcl-embedder-secrets`.
-2. **Have the realm grant this node its provider authorization** for
-   `mcl-embedder/embed` (D25). Until then its own procedure is not advertised,
+2. **Have the realm grant this node its provider authorizations** (D25), a grant
+   per org procedure, `mcl-embedder/embed` among them. Until then its own
+   procedure is not advertised,
    a call to it resolves to nothing, and `/health` (mcl_om's own check) is
    degraded, naming `mcl-embedder/embed` under `provider_grants`. A new
    identity is a new, unadmitted node, so keep the volume.
 
 ## Health
 
-`/health` reports whether callers can reach the procedure: a missing provider
+`/health` reports whether callers can reach its own procedure: a missing provider
 grant is `degraded`. The model loads on the first call and is not probed.
 
 ## Build and test

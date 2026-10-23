@@ -138,17 +138,16 @@ def context():
           ["Runs it on an AVX2 host and", "supplies the realm, the pinned",
            "seeds and the health port"], person=True)
     d.box("b-sys", 365, 186, 300, 152, "mcl-embedder", "[mcl_om mesh service, own box]",
-          ["mcl-embedder/embed is its own procedure,",
-           "and the only one; mcl_om adds info and",
-           "get_limits, both open. capabilities/0 is",
-           "the list. /health is on 8480; text in,",
-           "vectors out"])
+          ["mcl-embedder/embed is its own procedure.",
+           "mcl_om adds info and get_limits, both",
+           "open. capabilities/0 is the list.",
+           "/health is on 8480; text in, vectors out"])
     d.box("b-mac", 40, 400, 270, 120, "macula-realm", "[Macula infrastructure]",
-          ["Admits the node, and grants the", "D25 provider authorization for",
-           "mcl-embedder/embed"])
+          ["Admits the node, and grants the", "D25 provider authorizations its",
+           "org procedures need"])
     d.box("b-mac", 365, 400, 270, 120, "Macula stations, mesh DHT", "[Macula infrastructure]",
           ["The pinned seeds are its entry", "points (QUIC); the mesh DHT",
-           "carries the capability it advertises"])
+           "carries what it publishes"])
     d.edge("M175 150V168H420V186")
     d.text("t-rel", 183, 160, "calls mcl-embedder/embed,"); d.text("t-rel", 183, 176, "and waits for the reply")
     d.edge("M825 150V168H580V186")
@@ -168,11 +167,11 @@ def components():
           ["Application entry: start/2 calls", "mcl_om:boot/1 with this service",
            "module, which wires the mesh"], code=True)
     d.box("b-cmp", 346, 70, 290, 120, "mcl_embedder_service", "[mcl_om_service behaviour]",
-          ["The six callbacks mcl_om resolves", "by name: info, start, stop,",
-           "health, capabilities, identity_spec"], code=True)
+          ["The six mcl_om_service callbacks,", "resolved by name. mcl-om adds the open",
+           "info and get_limits beside them."], code=True)
     d.box("b-cmp", 660, 70, 308, 120, "mcl_embedder_sup", "[supervisor, one_for_one]",
-          ["No children: the handler is started", "by the capability registration, so",
-           "the empty list is the honest shape"], code=True)
+          ["No children: the handler is started", "by mcl-om's capability registration,",
+           "so the empty list is the honest shape"], code=True)
     d.box("b-sys", 32, 222, 290, 152, "serve_embed", "[macula_response handler]",
           ["handle_request/2: one text returns", "a vector, a list of texts a list of",
            "vectors. kind query or passage", "applies the e5 prefix; no text at",
@@ -202,7 +201,7 @@ def components():
     d.edge("M180 374V420"); d.text("t-rel", 188, 414, "embeds with")
     d.edge("M340 620V540"); d.text("t-rel", 348, 576, "MCL_EMBED_MODEL_DIR,"); d.text("t-rel", 348, 592, "read on the first call")
     d.edge("M40 666H24V400H500V374"); d.text("t-rel", 300, 394, "read at boot")
-    d.text("t-desc", 40, 752, "config/sys.config.src fixes the org, mcl-embedder, which prefixes the procedure names, and pins the")
+    d.text("t-desc", 40, 752, "config/sys.config.src fixes the org, mcl-embedder, which prefixes procedure names, and pins the")
     d.text("t-desc", 40, 770, "realm key: a boot with a malformed term is refused. The model loads on the first call, so")
     d.text("t-desc", 40, 788, "/health never probes it, and deploy/docker-compose.yml runs the container on the host network.")
     d.legend(806)

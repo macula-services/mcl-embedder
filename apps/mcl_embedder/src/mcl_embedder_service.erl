@@ -5,7 +5,7 @@
 %% watching. The `-behaviour' attribute below is what turns that into a compile
 %% error instead, and the generated test suite guards the attribute itself.
 %%
-%% IT ANNOUNCES ONE PROCEDURE AND ASKS FOR NO ACTION OF ITS OWN. `capabilities/0'
+%% IT ANNOUNCES ITS OWN PROCEDURE AND ASKS FOR NO ACTION OF ITS OWN. `capabilities/0'
 %% returns `embed' v1; the authority to serve it is the D25 provider grant the
 %% realm issues per procedure, which is why `identity_spec/0' asks for no action.
 %% Advertising a capability before its handler exists puts a lie on the mesh that

@@ -62,23 +62,22 @@
 <rect class="b-sys" x="365" y="186" width="300" height="152" rx="10"/>
 <text class="t-name" x="381" y="214">mcl-embedder</text>
 <text class="t-type" x="381" y="232">[mcl_om mesh service, own box]</text>
-<text class="t-desc" x="381" y="256">mcl-embedder/embed is its own procedure,</text>
-<text class="t-desc" x="381" y="272">and the only one; mcl_om adds info and</text>
-<text class="t-desc" x="381" y="288">get_limits, both open. capabilities/0 is</text>
-<text class="t-desc" x="381" y="304">the list. /health is on 8480; text in,</text>
-<text class="t-desc" x="381" y="320">vectors out</text>
+<text class="t-desc" x="381" y="256">mcl-embedder/embed is its own procedure.</text>
+<text class="t-desc" x="381" y="272">mcl_om adds info and get_limits, both</text>
+<text class="t-desc" x="381" y="288">open. capabilities/0 is the list.</text>
+<text class="t-desc" x="381" y="304">/health is on 8480; text in, vectors out</text>
 <rect class="b-mac" x="40" y="400" width="270" height="120" rx="10"/>
 <text class="t-name" x="56" y="428">macula-realm</text>
 <text class="t-type" x="56" y="446">[Macula infrastructure]</text>
 <text class="t-desc" x="56" y="470">Admits the node, and grants the</text>
-<text class="t-desc" x="56" y="486">D25 provider authorization for</text>
-<text class="t-desc" x="56" y="502">mcl-embedder/embed</text>
+<text class="t-desc" x="56" y="486">D25 provider authorizations its</text>
+<text class="t-desc" x="56" y="502">org procedures need</text>
 <rect class="b-mac" x="365" y="400" width="270" height="120" rx="10"/>
 <text class="t-name" x="381" y="428">Macula stations, mesh DHT</text>
 <text class="t-type" x="381" y="446">[Macula infrastructure]</text>
 <text class="t-desc" x="381" y="470">The pinned seeds are its entry</text>
 <text class="t-desc" x="381" y="486">points (QUIC); the mesh DHT</text>
-<text class="t-desc" x="381" y="502">carries the capability it advertises</text>
+<text class="t-desc" x="381" y="502">carries what it publishes</text>
 <path class="edge" d="M175 150V168H420V186" marker-end="url(#a)"/>
 <text class="t-rel" x="183" y="160">calls mcl-embedder/embed,</text>
 <text class="t-rel" x="183" y="176">and waits for the reply</text>
